@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vedant Korade — AI Engineer & Researcher</title>
+<meta name="description" content="Portfolio of Vedant Korade — AI Engineer & Researcher. Current work in post-training, AI agent swarms, and world models." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Spectral:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#e2c296; --bg-2:#f5ceb3;
+  --paper:#f7e9d6; --paper-2:#efd9bf;
+  --ink:#2e2620; --ink-soft:#5a4c3d; --ink-faint:#8a785f;
+  /* red brain */
+  --r1:#f0bbcd; --r2:#eb8291; --r3:#eb7777; --r4:#ff6961; --r5:#db4646;
+  /* turquoise origin */
+  --t1:#c9e7db; --t2:#c2eec7; --t3:#40e0d0; --t4:#68c4af; --t5:#336659;
+  /* blue */
+  --b1:#0090ab; --b2:#5b8296; --b3:#0e1c4f;
+  --line:rgba(46,38,32,.16);
+  --line-strong:rgba(46,38,32,.32);
+  --shadow:0 12px 40px -18px rgba(46,38,32,.5);
+  --sidebar-w:320px;
+  --serif:'Fraunces',Georgia,serif;
+  --body:'Spectral',Georgia,serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body); color:var(--ink);
+  background:var(--bg);
+  background-image:radial-gradient(120% 120% at 80% -10%, var(--bg-2) 0%, var(--bg) 46%);
+  line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+::selection{background:var(--r2);color:#fff}
+img{max-width:100%;display:block}
+
+/* ===== layout ===== */
+.shell{display:flex;min-height:100vh}
+.sidebar{
+  position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;
+  padding:34px 30px;display:flex;flex-direction:column;gap:22px;
+  background:linear-gradient(180deg,var(--paper) 0%, var(--paper-2) 100%);
+  border-right:1px solid var(--line-strong);
+  overflow-y:auto;z-index:20;
+}
+.main-col{margin-left:var(--sidebar-w);flex:1;min-width:0;display:flex;flex-direction:column}
+.main{flex:1;min-width:0;width:100%}
+.skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:8px;z-index:60}
+.skip:focus{left:8px}
+
+/* ===== sidebar pieces ===== */
+.pfp{
+  width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:14px;
+  border:1px solid var(--line-strong);
+  box-shadow:var(--shadow);background:#1a1410;
+}
+.quote{
+  font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:15px;line-height:1.5;color:var(--ink-soft);
+  padding:14px 16px;border-left:3px solid var(--r4);
+  background:rgba(255,255,255,.28);border-radius:0 10px 10px 0;
+}
+.identity .eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--b1);
+}
+.identity h1{
+  font-family:var(--serif);font-weight:600;font-size:27px;
+  line-height:1.05;margin-top:6px;letter-spacing:-.01em;
+}
+.identity .title{
+  font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);
+  margin-top:8px;letter-spacing:.02em;
+}
+
+/* contact links */
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.links a{
+  font-family:var(--mono);font-size:11.5px;text-decoration:none;
+  padding:6px 11px;border:1px solid var(--line-strong);border-radius:999px;
+  color:var(--ink-soft);background:rgba(255,255,255,.22);
+  transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease;
+}
+.links a:hover{background:var(--b3);color:var(--paper);border-color:var(--b3);transform:translateY(-1px)}
+.links a:focus-visible{outline:2px solid var(--b1);outline-offset:2px}
+
+/* nav */
+.nav{margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+.nav ol{list-style:none}
+.nav li{margin:2px 0}
+.nav a{
+  display:flex;align-items:baseline;gap:12px;text-decoration:none;
+  padding:9px 10px;border-radius:9px;color:var(--ink-soft);
+  transition:background .18s ease,color .18s ease;
+}
+.nav a .num{font-family:var(--mono);font-size:11px;color:var(--b1);min-width:22px}
+.nav a .lbl{font-family:var(--serif);font-size:15.5px}
+.nav a:hover,.nav a.active{background:rgba(255,255,255,.42);color:var(--ink)}
+.nav a.active .num{color:var(--r5)}
+.nav a[href="#origin"] .num{color:var(--t4)}
+.nav a[href="#origin"]:hover,.nav a[href="#origin"].active{background:#69b9b3;color:#fff}
+.nav a[href="#origin"].active .num{color:#fff;opacity:0.8}
+.nav a[href="#origin"].active .lbl{color:#fff}
+.nav a:focus-visible{outline:2px solid var(--b1);outline-offset:2px}
+
+/* ===== chapters ===== */
+.chapter{padding:60px 8vw 96px;border-bottom:1px solid var(--line);position:relative;max-width:1180px}
+#ch01.chapter{border-bottom:none}
+.chapter:last-child{border-bottom:none}
+#origin.chapter{max-width:none;border-bottom:none;padding:60px 0 96px}
+.ch-head{margin-bottom:44px}
+.ch-eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--b1);display:flex;align-items:center;gap:12px;
+}
+.ch-eyebrow::before{content:"";width:34px;height:1px;background:var(--line-strong)}
+.ch-title{
+  font-family:var(--serif);font-weight:600;font-size:clamp(34px,4.6vw,58px);
+  line-height:1.02;letter-spacing:-.02em;margin-top:14px;
+}
+.ch-sub{font-size:18px;color:var(--ink-soft);margin-top:16px;max-width:56ch}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* shared text */
+.prose p{margin-bottom:16px;max-width:64ch;color:var(--ink-soft);font-size:16.5px}
+.prose p strong{color:var(--ink);font-weight:600}
+h3.blk{font-family:var(--serif);font-weight:600;font-size:23px;margin:0 0 12px;letter-spacing:-.01em}
+.mono-label{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+
+/* ===== ch01 brain hero ===== */
+.brain-hero{display:grid;grid-template-columns:minmax(0,0.8fr) minmax(0,1.8fr);gap:28px;align-items:stretch;margin-bottom:34px}
+.brain-intro{display:flex;flex-direction:column;justify-content:center}
+.brain-intro .prose p{margin-bottom:0;font-size:16px}
+.brain-wrap{
+  position:relative;border-radius:18px;overflow:hidden;
+  border:1px solid var(--line-strong);box-shadow:var(--shadow);
+  background:radial-gradient(120% 130% at 50% 30%, #241016 0%, #160a0d 60%, #0d0608 100%);
+  height:clamp(500px,68vh,720px);min-height:500px;
+}
+#brain-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.brain-legend{
+  position:absolute;left:18px;bottom:16px;display:flex;flex-direction:column;gap:7px;
+  font-family:var(--mono);font-size:11.5px;color:#f3dccb;z-index:3;
+}
+.brain-legend .row{display:flex;align-items:center;gap:9px}
+.brain-legend .dot{width:9px;height:9px;border-radius:50%;box-shadow:0 0 10px currentColor}
+.brain-hint{
+  position:absolute;right:18px;top:16px;font-family:var(--mono);font-size:11px;
+  color:rgba(255,255,255,.55);z-index:3;letter-spacing:.04em;
+}
+.brain-tip{
+  position:absolute;padding:7px 11px;border-radius:8px;pointer-events:none;
+  font-family:var(--mono);font-size:12px;background:rgba(13,6,8,.9);color:#ffe;
+  border:1px solid rgba(255,105,97,.5);opacity:0;transform:translateY(6px);
+  transition:opacity .2s ease,transform .2s ease;z-index:4;white-space:nowrap;
+}
+.brain-tip.show{opacity:1;transform:none}
+
+/* ===== chart ===== */
+.chart-card{
+  margin-top:34px;background:var(--paper);border:1px solid var(--line-strong);
+  border-radius:16px;padding:26px 26px 20px;box-shadow:var(--shadow);position:relative;
+}
+.chart-holder{position:relative;height:clamp(280px,40vh,380px)}
+.toast{
+  margin-top:18px;font-family:var(--mono);font-size:13px;color:var(--ink-soft);
+  background:linear-gradient(90deg,var(--t1),var(--bg-2));border:1px dashed var(--line-strong);
+  border-radius:10px;padding:12px 15px;
+}
+.toast b{color:var(--r5)}
+.research-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:18px;margin-top:40px}
+.rcard{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px}
+.rcard .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--b1)}
+.rcard h4{font-family:var(--serif);font-size:19px;font-weight:600;margin:8px 0 10px}
+.rcard p{font-size:15px;color:var(--ink-soft)}
+
+/* ===== ch02 origin (turquoise) ===== */
+#origin{background:linear-gradient(180deg, #69b9b3 0%, #56a59f 100%)}
+#origin .ch-head,#origin .origin-grid{max-width:1180px;margin-inline:auto;padding-left:8vw;padding-right:8vw}
+#origin .ch-eyebrow{color:#0d3a2e}
+#origin .ch-eyebrow::before{background:#0d3a2e}
+#origin .ch-title{color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.1)}
+#origin .ch-sub{color:rgba(255,255,255,.92)}
+.origin-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:30px;align-items:start}
+.origin-main{background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.35);border-radius:16px;padding:30px;backdrop-filter:blur(8px)}
+.origin-side{display:flex;flex-direction:column;gap:18px}
+.o-block{background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.35);border-radius:14px;padding:20px;backdrop-filter:blur(8px)}
+.o-block h3{font-family:var(--serif);font-size:17px;font-weight:600;color:#0d3a2e;margin-bottom:10px}
+.big-quote{
+  grid-column:1/-1;margin-top:6px;font-family:var(--serif);font-style:italic;
+  font-weight:500;font-size:clamp(22px,3vw,32px);line-height:1.32;color:#0d3a2e;
+  padding:30px 34px;border-left:4px solid #fff;background:rgba(255,255,255,.35);border-radius:0 14px 14px 0;backdrop-filter:blur(8px);
+}
+.big-quote .motto{display:block;margin-top:16px;font-style:normal;font-family:var(--mono);font-size:13px;letter-spacing:.08em;color:#1a5c4a;text-transform:uppercase}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{font-family:var(--mono);font-size:11.5px;padding:6px 11px;border-radius:999px;background:rgba(64,224,208,.2);border:1px solid rgba(51,102,89,.3);color:var(--t5)}
+.idols{display:flex;flex-direction:column;gap:12px}
+.idol{border-left:2px solid var(--t4);padding-left:12px}
+.idol b{font-family:var(--serif);font-size:16px}
+.idol span{display:block;font-size:13.5px;color:var(--ink-soft)}
+
+/* ===== accordions (ch03/04) ===== */
+.accordion{border:1px solid var(--line-strong);border-radius:16px;background:var(--paper);margin-top:26px;overflow:hidden}
+.acc-head{
+  width:100%;text-align:left;background:none;border:none;cursor:pointer;
+  padding:22px 24px;display:flex;align-items:center;gap:16px;font:inherit;color:var(--ink);
+}
+.acc-head:hover{background:rgba(255,255,255,.4)}
+.acc-head:focus-visible{outline:2px solid var(--b1);outline-offset:-2px}
+.acc-head .idx{font-family:var(--mono);font-size:12px;color:var(--b1)}
+.acc-head .h{font-family:var(--serif);font-size:22px;font-weight:600;flex:1}
+.acc-head .prompt{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+.acc-head .chev{transition:transform .3s ease;color:var(--ink-soft)}
+.acc-head[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.acc-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
+.acc-body[data-open="true"]{grid-template-rows:1fr}
+.acc-body .inner{overflow:hidden}
+.acc-body .pad{padding:4px 24px 26px}
+
+/* robotics: 3D robot showcase */
+.robotics-wrap{position:relative;margin-top:28px}
+.robot-visual{
+  position:relative;border-radius:16px;overflow:hidden;
+  border:1px solid var(--line-strong);box-shadow:var(--shadow);
+  background:radial-gradient(120% 120% at 50% 20%, #2a2218 0%, #1a1410 55%, #0f0c0a 100%);
+  height:clamp(300px,36vh,420px);margin-bottom:18px;
+}
+#robot-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.robot-hint{
+  position:absolute;right:16px;top:14px;font-family:var(--mono);font-size:11px;
+  color:rgba(255,255,255,.5);z-index:3;letter-spacing:.04em;
+}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:16px}
+.metric{background:rgba(255,255,255,.4);border:1px solid var(--line);border-radius:12px;padding:16px}
+.metric .n{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--r5)}
+.metric .k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin-top:4px}
+.stacklist{list-style:none;margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.stacklist li{font-family:var(--mono);font-size:11.5px;padding:5px 10px;border-radius:6px;background:rgba(219,70,70,.12);border:1px solid rgba(219,70,70,.28);color:var(--r5)}
+
+/* swarm canvas */
+.swarm-wrap{position:relative;margin-top:8px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(120% 120% at 50% 0%, #0e1c4f 0%, #0a1436 100%);height:400px;margin-bottom:18px}
+#swarm-canvas{width:100%;height:100%;display:block}
+.swarm-key{position:absolute;left:16px;top:14px;display:flex;flex-direction:column;gap:6px;font-family:var(--mono);font-size:11px;color:#dfe7f5;z-index:3}
+.swarm-key .row{display:flex;align-items:center;gap:8px}
+.swarm-key .bar{width:22px;height:3px;border-radius:2px}
+
+/* hackathon placeholder + course */
+.course-card{display:flex;gap:22px;align-items:center;background:rgba(255,255,255,.4);border:1px solid var(--line);border-radius:14px;padding:20px}
+.course-card img{width:150px;height:auto;border-radius:10px;border:1px solid var(--line-strong)}
+.course-card h4{font-family:var(--serif);font-size:20px;font-weight:600;margin-bottom:6px}
+.course-card p{font-size:15px;color:var(--ink-soft)}
+.placeholder{
+  margin-top:16px;border:1.5px dashed var(--line-strong);border-radius:14px;padding:34px;text-align:center;
+  background:repeating-linear-gradient(45deg,rgba(255,255,255,.18),rgba(255,255,255,.18) 12px,transparent 12px,transparent 24px);
+}
+.placeholder .mono-label{color:var(--b2)}
+.placeholder p{font-size:15px;color:var(--ink-soft);margin-top:10px;max-width:52ch;margin-inline:auto}
+.foot{padding:40px 8vw 60px;max-width:1180px;font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+
+/* ===== responsive ===== */
+.menu-btn{display:none}
+@media (max-width:960px){
+  :root{--sidebar-w:0px}
+  .sidebar{
+    transform:translateX(-100%);transition:transform .3s ease;width:300px;
+  }
+  .sidebar.open{transform:none}
+  .main-col{margin-left:0}
+  .menu-btn{
+    display:flex;align-items:center;gap:8px;position:fixed;top:16px;left:16px;z-index:40;
+    font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--paper);border:1px solid var(--line-strong);border-radius:999px;
+    padding:10px 16px;cursor:pointer;box-shadow:var(--shadow);color:var(--ink);
+  }
+  .origin-grid{grid-template-columns:1fr}
+  .brain-hero{grid-template-columns:1fr}
+  .chapter{padding:88px 6vw 72px}
+}
+@media (max-width:560px){
+  .course-card{flex-direction:column;text-align:center}
+  .course-card img{width:100%;max-width:220px}
+  .ch-title{font-size:34px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+
+</style>
+</head>
+<body>
+<a class="skip" href="#ch01">Skip to content</a>
+<button class="menu-btn" id="menuBtn" aria-label="Toggle navigation" aria-expanded="false">☰ Menu</button>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <img class="pfp" src="pfp.jpg" alt="A lion on a dark background, looking upward with hope" />
+  <blockquote class="quote">No matter the challenge, like me this lion looks up with hope and breaks his limits.</blockquote>
+  <div class="identity">
+    <div class="eyebrow">Portfolio</div>
+    <h1>Vedant Korade</h1>
+    <div class="title">AI Engineer &amp; Researcher</div>
+  </div>
+  <nav class="links" aria-label="Contact and profiles">
+    <a href="mailto:vedantkorade@gmail.com">Email</a>
+    <a href="https://github.com/godspeed-003" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://huggingface.co/godspeed-003" target="_blank" rel="noopener">Hugging Face</a>
+    <a href="https://wandb.ai/profile/vedantkorade" target="_blank" rel="noopener">W&amp;B</a>
+    <a href="https://x.com/VedantKorade" target="_blank" rel="noopener">X</a>
+    <a href="https://wa.me/merlin003" target="_blank" rel="noopener">WhatsApp</a>
+    <a href="https://scholar.google.com/citations?user=CuzL2yQAAAAJ&hl=en" target="_blank" rel="noopener">Scholar</a>
+  </nav>
+  <nav class="nav" aria-label="Sections">
+    <ol>
+      <li><a href="#ch01"><span class="num">01</span><span class="lbl">Current Research</span></a></li>
+      <li><a href="#origin"><span class="num">02</span><span class="lbl">Origin &amp; Philosophy</span></a></li>
+      <li><a href="#ch03"><span class="num">03</span><span class="lbl">Artifacts</span></a></li>
+      <li><a href="#ch04"><span class="num">04</span><span class="lbl">Mastery</span></a></li>
+    </ol>
+  </nav>
+</aside>
+<div class="main-col">
+<main class="main" id="main">
+<!-- ============ CHAPTER 01 — CURRENT RESEARCH ============ -->
+<section class="chapter" id="ch01">
+  <div class="ch-head reveal">
+    <div class="ch-eyebrow">01 — Now</div>
+    <h1 class="ch-title">Current Research Threads</h1>
+    <p class="ch-sub">Where the hours actually go: post-training small language models, designing adaptive-compute architectures. It's 5am and you just spent all night on your research, training a custom 7B LLM. This is life!</p>
+  </div>
+
+  <div class="brain-hero reveal">
+    <div class="brain-intro">
+      <div class="prose">
+        <p>Three hemispheres of focus — <strong>AI research</strong> at the core, <strong>GenAI &amp; agents</strong> on the right, <strong>robotics &amp; ML</strong> on the left. Drag the brain to rotate; hover a lobe for detail.</p>
+      </div>
+    </div>
+    <div class="brain-wrap">
+    <canvas id="brain-canvas"></canvas>
+    <div class="brain-hint">drag to rotate · hover a lobe</div>
+    <div class="brain-legend">
+      <div class="row"><span class="dot" style="color:#ff6961"></span> AI Research — frontal core (glowing)</div>
+      <div class="row"><span class="dot" style="color:#68c4af"></span> GenAI &amp; Agents — right hemisphere</div>
+      <div class="row"><span class="dot" style="color:#0090ab"></span> Robotics &amp; ML — left hemisphere</div>
+    </div>
+    <div class="brain-tip" id="brainTip"></div>
+    </div>
+  </div>
+  <div class="chart-card reveal">
+    <div class="mono-label">fig. 01 — Loss Curve vs. Sanity</div>
+    <h3 class="blk" style="margin-top:8px">The real training dynamics of a research night</h3>
+    <div class="chart-holder"><canvas id="lossChart"></canvas></div>
+    <div class="toast"><b>Hell yeah, did it!</b> ... wait ... shit! It's morning already wow.</div>
+  </div>
+
+  <div class="research-grid">
+    <article class="rcard reveal">
+      <div class="tag">Ellanor AI · Research Lab</div>
+      <h4>Post-training, hands-on</h4>
+      <p>Working under founder and mentor <strong>Archit Sood</strong> on what the lab needs most: post-training and CUDA optimization. Instruct-tuned and RL-trained SLMs that fit a free Colab T4, using high-quality HuggingFace datasets and TRL for math and coding.</p>
+    </article>
+    <article class="rcard reveal">
+      <div class="tag">Open Source · Contribution</div>
+      <h4>RLHF &amp; RLAIF, from scratch</h4>
+      <p>Wrote the algorithm, CLI, and training script for RLHF and RLAIF in the lab's open-source repo — thinkrl provides researchers with SOTA algorithms, reasoning capabilities, and multimodal support.</p>
+    </article>
+    <article class="rcard reveal">
+      <div class="tag">Ellanor AI · Architecture</div>
+      <h4>ASN — adaptive compute</h4>
+      <p>Helping design and execute <strong>ASN</strong>, an efficient alternative to conventional routing that lets a model allocate compute on-demand by input complexity. Co-authoring the applied-math paper behind it.</p>
+    </article>
+    <article class="rcard reveal">
+      <div class="tag">Ellanor AI · Signals</div>
+      <h4>Signals, SIGINT &amp; Number Stations</h4>
+      <p>The lab compresses LLM input into signals. Researching Number Stations and SIGINT with the founder to sharpen that signal layer of the architecture.</p>
+    </article>
+    <article class="rcard reveal">
+      <div class="tag">Independent · with Ayan Farooque</div>
+      <h4>A new LLM architecture</h4>
+      <p>A Novel LLM architecture not MoE, but the same class of idea that combines complementary efficiency mechanisms to allocate compute by input complexity. Proof-of-concept built, preliminary results stable and adaptive, prepping for peer review.</p>
+    </article>
+  </div>
+</section>
+<!-- ============ CHAPTER 02 — ORIGIN & PHILOSOPHY ============ -->
+<section class="chapter" id="origin">
+  <div class="ch-head reveal">
+    <div class="ch-eyebrow">02 — Origin</div>
+    <h1 class="ch-title">Why any of this exists</h1>
+    <p class="ch-sub">A desktop computer at age five, a Marvel obsession, and one stubborn question: why should a machine need me to keep telling it what to do?</p>
+  </div>
+
+  <div class="origin-grid">
+    <div class="origin-main reveal">
+      <div class="mono-label">the childhood thread</div>
+      <div class="prose" style="margin-top:14px">
+        <p>I had a desktop PC from the age of five. For years it was purely for games. But using it every single day, I kept circling one thought: <strong>why does this thing need me?</strong> It should do a task on one command, not demand continuous back-and-forth that eats my time.</p>
+        <p>Learning to code answered it. Code solves problems logically, and I loved dissecting everything by logic. In junior college — deep in my Marvel phase — I wanted my own JARVIS. So I learned Python, read other people's code and blogs, and built one as my CS project: it detected specific words in speech (weather, time, news) and fired the matching function. That was the start of solving problems by coding, logically.</p>
+        <p>The aim hasn't changed since. <strong>Build machines</strong> — software models or hardware robots — that hold all the world's knowledge and can do the work that needs doing, specialist or generalist. And I believe getting there needs <strong>World Models</strong>, not just transformers and LLMs.</p>
+      </div>
+    </div>
+
+    <div class="origin-side">
+      <div class="o-block reveal">
+        <h3>Who I look up to</h3>
+        <div class="idols">
+          <div class="idol"><b>Geoffrey Hinton</b><span>Pioneering AI</span></div>
+          <div class="idol"><b>Yann LeCun</b><span>The World Model champ</span></div>
+          <div class="idol"><b>Demis Hassabis</b><span>&amp; all of Google DeepMind — AI for science</span></div>
+          <div class="idol"><b>Open-source model labs</b><span>Chinese labs mainly, plus AI2, Nous &amp; Mistral</span></div>
+        </div>
+      </div>
+      <div class="o-block reveal">
+        <h3>Away from the terminal</h3>
+        <div class="chips">
+          <span class="chip">Painting</span><span class="chip">Poetry</span><span class="chip">Fiction</span>
+          <span class="chip">Cinema</span><span class="chip">Short films</span><span class="chip">Theater</span>
+          <span class="chip">Table tennis</span><span class="chip">Treks</span><span class="chip">Swimming</span>
+          <span class="chip">Rain</span><span class="chip">Football</span><span class="chip">Arcade &amp; strategy</span>
+        </div>
+      </div>
+    </div>
+
+    <blockquote class="big-quote reveal">
+      "If you don't dedicate your life to reaching the top... what's the point? A man needs to be audacious if he ever hopes to make his ideals a reality."
+      <span class="motto">I believe in punching above your weight — always.</span>
+    </blockquote>
+  </div>
+</section>
+<!-- ============ CHAPTER 03 — ARTIFACTS ============ -->
+<section class="chapter" id="ch03">
+  <div class="ch-head reveal">
+    <div class="ch-eyebrow">03 — Artifacts</div>
+    <h1 class="ch-title">Things I've actually shipped</h1>
+    <p class="ch-sub">Projects and internships, collapsed to save your scroll. Robots where it began, agents where it's headed.</p>
+  </div>
+
+  <!-- AI Agents swarm visual + accordion -->
+  <div class="robotics-wrap reveal">
+    <div class="swarm-wrap">
+      <canvas id="swarm-canvas"></canvas>
+      <div class="swarm-key">
+        <div class="row"><span class="bar" style="background:#40e0d0"></span> tasks — orchestrator → subagents</div>
+        <div class="row"><span class="bar" style="background:#ff6961"></span> results — subagents → orchestrator</div>
+      </div>
+    </div>
+    <div class="accordion">
+      <button class="acc-head" aria-expanded="false" aria-controls="acc-agents">
+        <span class="idx">A</span>
+        <span class="h">AI Agents &amp; swarms — where it's headed</span>
+        <span class="prompt">Click below for more detail</span>
+        <span class="chev">▾</span>
+      </button>
+      <div class="acc-body" id="acc-agents"><div class="inner"><div class="pad">
+        <div class="prose">
+          <p>After GenAI scrapers and RAG, I went deep on <strong>multi-agent workflows with CrewAI</strong>: an orchestrator that delegates to narrow, single-purpose subagents. Because each subagent does one thing accurately, the swarm as a whole sheds the stochastic wobble of a single LLM. Imagine this: it's 5am and you just spent all night on your research, training a custom 7B LLM. This is life!</p>
+        </div>
+
+        <div class="mono-label" style="margin-top:26px">Thinkloop · AI Agent Developer · Remote · Jun – Aug 2025</div>
+        <div class="prose" style="margin-top:12px">
+          <p>Shipped a <strong>FastAPI AI agent</strong> on Google Gemini, wired into Google Calendar and Plivo, for automated patient call-handling and scheduling at <strong>95% accuracy</strong> for hospitals. Designed a custom MCP server for appointment handling and memory-based personalization, and built voice agents on LiveKit with Deepgram (STT), ElevenLabs (TTS), Plivo telephony, and mem0 for stateful memory. End-to-end delivery for real clients — hospitals and science labs.</p>
+        </div>
+        <ul class="stacklist">
+          <li>CrewAI</li><li>FastAPI</li><li>Gemini</li><li>Custom MCP</li><li>LiveKit</li><li>Deepgram</li><li>ElevenLabs</li><li>mem0</li>
+        </ul>
+
+        <div class="mono-label" style="margin-top:26px">Selected agent &amp; ML projects</div>
+        <div class="prose" style="margin-top:12px">
+          <p><strong>Gemini browser automation for IMDb</strong> (Apr 2025) — adapted the browser-use framework from OpenAI to Gemini, with screenshot + DOM analysis for intelligent title matching and marking watched. <strong>Fine-tuned private AI agent</strong> (Apr 2025) — local LLaMA 3.1 via Ollama with a modified smolagents stack, <strong>92%</strong> query-to-tool accuracy across 8 tools, sub-2s responses. <strong>Google Hackathon education platform</strong> (May 2025) — Gemini + CrewAI + FAISS RAG, 98% OCR even on handwriting, 36% cut in teacher workload.</p>
+          <p><strong>Earlier ML:</strong> Credit Card Default XGBoost (Jan 2025), Spotify serverless AWS pipeline (Dec 2024), Face-Recognition auto-lock with YOLOv8 + KNN (Oct 2020). <strong>College:</strong> MERN expense tracker (Y1), ASN→English Sign-Language Translator with TTS (Y2), NNUE chess-predictor (Y3).</p>
+        </div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- Robotics with 3D robot -->
+  <div class="robotics-wrap reveal">
+    <div class="robot-visual">
+      <canvas id="robot-canvas"></canvas>
+      <div class="robot-hint">drag to rotate</div>
+    </div>
+    <div class="accordion">
+      <button class="acc-head" aria-expanded="false" aria-controls="acc-robotics">
+        <span class="idx">R</span>
+        <span class="h">Robotics — where it began</span>
+        <span class="prompt">Click below for more detail</span>
+        <span class="chev">▾</span>
+      </button>
+      <div class="acc-body" id="acc-robotics"><div class="inner"><div class="pad">
+        <div class="mono-label">Robocon Team · Junior Programmer · Sion, MH · Oct 2023 – Jul 2024</div>
+        <div class="prose" style="margin-top:12px">
+          <p>Independently built a <strong>Bluetooth-controlled Mecanum robot</strong> in Embedded C, driven remotely from a PlayStation 5 controller. Helped write control algorithms for autonomous robots in Embedded C and ROS — the work that carried the team to the <strong>national Robocon finals</strong>.</p>
+        </div>
+        <div class="metrics">
+          <div class="metric"><div class="n">95%</div><div class="k">OpenCV color-classification accuracy</div></div>
+          <div class="metric"><div class="n">Finals</div><div class="k">National Robocon</div></div>
+          <div class="metric"><div class="n">PS5 → BT</div><div class="k">Mecanum teleop</div></div>
+        </div>
+        <ul class="stacklist">
+          <li>Embedded C</li><li>ROS</li><li>OpenCV</li><li>Python</li><li>Custom vision module</li>
+        </ul>
+      </div></div></div>
+    </div>
+  </div>
+</section>
+<!-- ============ CHAPTER 04 — MASTERY ============ -->
+<section class="chapter" id="ch04">
+  <div class="ch-head reveal">
+    <div class="ch-eyebrow">04 — Mastery</div>
+    <h1 class="ch-title">Sharpening the edge</h1>
+    <p class="ch-sub">The deliberate practice: certified coursework and timed hackathon sprints. Collapsed by default — open what you want to inspect.</p>
+  </div>
+
+  <!-- Courses -->
+  <div class="accordion reveal">
+    <button class="acc-head" aria-expanded="false" aria-controls="acc-courses">
+      <span class="idx">C</span>
+      <span class="h">Courses — formal grounding</span>
+      <span class="prompt">Click below for more detail</span>
+      <span class="chev">▾</span>
+    </button>
+    <div class="acc-body" id="acc-courses"><div class="inner"><div class="pad">
+      <div class="course-card">
+        <img src="Hugging Face.jpg" alt="Hugging Face AI Agents Course certificate" />
+        <div>
+          <h4>Hugging Face — AI Agents Course</h4>
+          <p>The full agents curriculum from the source of the ecosystem: agent design, tool use, and the frameworks (smolagents, LangChain, LlamaIndex) that back most of the agent work in Chapter 03. Completed and certified.</p>
+        </div>
+      </div>
+    </div></div></div>
+  </div>
+
+  <!-- Hackathons placeholder -->
+  <div class="accordion reveal">
+    <button class="acc-head" aria-expanded="false" aria-controls="acc-hack">
+      <span class="idx">H</span>
+      <span class="h">Hackathons — timed sprints</span>
+      <span class="prompt">Click below for more detail</span>
+      <span class="chev">▾</span>
+    </button>
+    <div class="acc-body" id="acc-hack"><div class="inner"><div class="pad">
+      <div class="placeholder">
+        <div class="mono-label">Battle cards — coming soon</div>
+        <p>Rank, sprint duration, and core technical architecture for each hackathon will land here. Data to be added.</p>
+      </div>
+    </div></div></div>
+  </div>
+</section>
+</main>
+<footer class="foot">
+  Built by Vedant Korade · AI Engineer &amp; Researcher · Three.js + Chart.js, no build step, static on GitHub Pages.
+</footer>
+</div>
+</div>
+<script>
+(function(){
+  'use strict';
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Smooth scroll for nav + link anchors ---------- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav a[href^="#"]'));
+  function closeSidebar(){
+    var sb = document.getElementById('sidebar');
+    var mb = document.getElementById('menuBtn');
+    if(sb){ sb.classList.remove('open'); }
+    if(mb){ mb.setAttribute('aria-expanded','false'); }
+  }
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href');
+      if(id.length < 2) return;
+      var target = document.querySelector(id);
+      if(!target) return;
+      e.preventDefault();
+      target.scrollIntoView({behavior: prefersReduced ? 'auto' : 'smooth', block:'start'});
+      history.replaceState(null,'',id);
+      if(window.innerWidth <= 960) closeSidebar();
+    });
+  });
+
+  /* ---------- Mobile menu toggle ---------- */
+  var menuBtn = document.getElementById('menuBtn');
+  if(menuBtn){
+    menuBtn.addEventListener('click', function(){
+      var sb = document.getElementById('sidebar');
+      var open = sb.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  /* ---------- Accordion toggle ---------- */
+  document.querySelectorAll('.acc-head').forEach(function(head){
+    head.addEventListener('click', function(){
+      var expanded = head.getAttribute('aria-expanded') === 'true';
+      var bodyId = head.getAttribute('aria-controls');
+      var body = document.getElementById(bodyId);
+      head.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      if(body) body.setAttribute('data-open', expanded ? 'false' : 'true');
+      if(!expanded && bodyId === 'acc-agents' && window.__swarmLayout){
+        setTimeout(window.__swarmLayout, 420);
+      }
+    });
+  });
+
+  /* ---------- Scroll reveal ---------- */
+  var reveals = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+  if(prefersReduced || !('IntersectionObserver' in window)){
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, {rootMargin:'0px 0px -8% 0px', threshold:0.12});
+    reveals.forEach(function(el){ io.observe(el); });
+  }
+
+  /* ---------- Nav active state on scroll ---------- */
+  var sections = navLinks.map(function(a){
+    return document.querySelector(a.getAttribute('href'));
+  }).filter(Boolean);
+  if('IntersectionObserver' in window){
+    var navIo = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          var id = '#' + en.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle('active', a.getAttribute('href') === id);
+          });
+        }
+      });
+    }, {rootMargin:'-40% 0px -55% 0px', threshold:0});
+    sections.forEach(function(s){ navIo.observe(s); });
+  }
+
+  /* ===== 1. Cortex Brain (Three.js) ===== */
+  (function brainEngine(){
+    var canvas = document.getElementById('brain-canvas');
+    if(!canvas || typeof THREE === 'undefined') return;
+    var tip = document.getElementById('brainTip');
+    var wrap = canvas.parentElement;
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+    camera.position.set(0, 0.2, 6.5);
+    var renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+
+    // Anatomical brain particle generation (rejection sampling)
+    var TOTAL = 7000;
+    var corePos = [], rightPos = [], leftPos = [];
+    var attempts = 0;
+    while(corePos.length/3 + rightPos.length/3 + leftPos.length/3 < TOTAL && attempts < TOTAL*5){
+      attempts++;
+      var u2 = Math.acos(2*Math.random()-1), v2 = Math.random()*Math.PI*2;
+      var bx = 2.4*Math.sin(u2)*Math.cos(v2), by = 1.9*Math.cos(u2), bz = 2.5*Math.sin(u2)*Math.sin(v2);
+      var ax = Math.abs(bx);
+      var fissure = Math.exp(-ax*ax*10)*Math.max(0,by*0.6+0.4)*0.55;
+      if(ax < 0.35 && Math.random() < fissure*1.5) continue;
+      by -= fissure*0.4;
+      if(by < -0.5 && ax > 1.2) bz *= 1+0.18*Math.exp(-(by+1)*(by+1)*2);
+      if(bz > 1.0 && by > -0.6) bz *= 1+0.12*Math.exp(-by*by*1.5);
+      if(by < -0.8 && bz < -1.0){ var cbv=0.25*Math.exp(-((by+1.3)*(by+1.3)+(bz+1.5)*(bz+1.5))*0.6); by-=cbv; bz-=cbv*0.4; }
+      if(by < -1.5 && ax < 0.4 && Math.abs(bz) < 0.5) by -= 0.3*Math.exp(-ax*ax*8);
+      var depth = 0.65+Math.pow(Math.random(),0.45)*0.35;
+      bx*=depth; by*=depth; bz*=depth;
+      var fold = (Math.sin(bx*9+by*3)*Math.sin(by*8+bz*5)*Math.sin(bz*7+bx*4))*0.05;
+      bx+=fold; by+=fold*0.6; bz+=fold;
+      var dist2 = Math.sqrt(bx*bx+by*by+bz*bz);
+      if(dist2 < 1.3 && by > -0.4 && bz > 0.2) corePos.push(bx,by,bz);
+      else if(bx > 0.12) rightPos.push(bx,by,bz);
+      else if(bx < -0.12) leftPos.push(bx,by,bz);
+      else corePos.push(bx,by,bz);
+    }
+    var clusters = [
+      {name:'AI Research', hex:0xff6961, positions:new Float32Array(corePos),
+       center:[0,0.2,0.6], blurb:'the core — post-training, CUDA, RLHF/RLAIF', pSize:0.15},
+      {name:'GenAI & Agents', hex:0x68c4af, positions:new Float32Array(rightPos),
+       center:[1.6,0.1,0], blurb:'right hemisphere — CrewAI swarms, RAG, MCP', pSize:0.11},
+      {name:'Robotics & ML', hex:0x0090ab, positions:new Float32Array(leftPos),
+       center:[-1.6,0.1,0], blurb:'left hemisphere — ROS, OpenCV, Mecanum', pSize:0.11}
+    ];
+    var group = new THREE.Group();
+    scene.add(group);
+    var meshes = [];
+
+    // soft round sprite so particles glow instead of showing as squares
+    function makeSprite(hex){
+      var c = document.createElement('canvas'); c.width = c.height = 64;
+      var g = c.getContext('2d');
+      var col = new THREE.Color(hex);
+      var r = Math.round(col.r*255), gg = Math.round(col.g*255), b = Math.round(col.b*255);
+      var grd = g.createRadialGradient(32,32,0,32,32,32);
+      grd.addColorStop(0, 'rgba('+r+','+gg+','+b+',1)');
+      grd.addColorStop(0.35, 'rgba('+r+','+gg+','+b+',0.55)');
+      grd.addColorStop(1, 'rgba('+r+','+gg+','+b+',0)');
+      g.fillStyle = grd; g.fillRect(0,0,64,64);
+      var t = new THREE.Texture(c); t.needsUpdate = true; return t;
+    }
+
+    clusters.forEach(function(cl, i){
+      var geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(cl.positions, 3));
+      var mat = new THREE.PointsMaterial({
+        size: cl.pSize, map: makeSprite(cl.hex),
+        transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+        color: cl.hex, opacity: i===0 ? 0.95 : 0.8
+      });
+      var pts = new THREE.Points(geo, mat);
+      pts.userData = cl;
+      group.add(pts); meshes.push(pts);
+    });
+
+    // faint synapse links between cluster centers
+    (function(){
+      var lgeo = new THREE.BufferGeometry();
+      var verts = [];
+      clusters.forEach(function(a){ clusters.forEach(function(b){
+        if(a!==b){ verts.push(a.center[0],a.center[1],a.center[2], b.center[0],b.center[1],b.center[2]); }
+      });});
+      lgeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(verts),3));
+      var lmat = new THREE.LineBasicMaterial({color:0xff6961, transparent:true, opacity:0.12});
+      group.add(new THREE.LineSegments(lgeo, lmat));
+    })();
+    function resize(){
+      var w = wrap.clientWidth, h = wrap.clientHeight;
+      if(!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w/h; camera.updateProjectionMatrix();
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // drag to rotate
+    var drag = false, px = 0, py = 0, rotX = 0, rotY = 0, autoV = 0.0016;
+    function down(e){ drag = true; var pt = e.touches?e.touches[0]:e; px = pt.clientX; py = pt.clientY; }
+    function move(e){
+      var pt = e.touches?e.touches[0]:e;
+      var rect = canvas.getBoundingClientRect();
+      hoverX = pt.clientX - rect.left; hoverY = pt.clientY - rect.top; haveHover = true;
+      if(!drag) return;
+      rotY += (pt.clientX - px)*0.006; rotX += (pt.clientY - py)*0.006;
+      rotX = Math.max(-1.1, Math.min(1.1, rotX));
+      px = pt.clientX; py = pt.clientY;
+      if(e.touches) e.preventDefault();
+    }
+    function up(){ drag = false; }
+    canvas.addEventListener('mousedown', down); window.addEventListener('mousemove', move); window.addEventListener('mouseup', up);
+    canvas.addEventListener('touchstart', down, {passive:true}); canvas.addEventListener('touchmove', move, {passive:false}); window.addEventListener('touchend', up);
+    canvas.addEventListener('mouseleave', function(){ haveHover = false; tip.classList.remove('show'); });
+
+    // hover detection via projected cluster centers
+    var raycaster = new THREE.Vector2();
+    var hoverX = 0, hoverY = 0, haveHover = false;
+    function detectHover(){
+      if(!haveHover){ tip.classList.remove('show'); return; }
+      var w = wrap.clientWidth, h = wrap.clientHeight, best = null, bestD = 9999;
+      meshes.forEach(function(m){
+        var c = m.userData.center;
+        var v = new THREE.Vector3(c[0],c[1],c[2]);
+        v.applyMatrix4(group.matrixWorld); v.project(camera);
+        var sx = (v.x*0.5+0.5)*w, sy = (-v.y*0.5+0.5)*h;
+        var d = Math.hypot(sx-hoverX, sy-hoverY);
+        if(d < bestD){ bestD = d; best = {m:m, sx:sx, sy:sy}; }
+      });
+      if(best && bestD < Math.max(70, w*0.13)){
+        var cl = best.m.userData;
+        tip.innerHTML = '<b>'+cl.name+'</b><br>'+cl.blurb;
+        tip.style.left = Math.min(w-160, Math.max(8, best.sx+12))+'px';
+        tip.style.top = Math.max(8, best.sy-10)+'px';
+        tip.classList.add('show');
+        meshes.forEach(function(m){ m.material.opacity = (m===best.m)? 1 : (m.userData===clusters[0]?0.5:0.32); });
+      } else {
+        tip.classList.remove('show');
+        meshes.forEach(function(m,i){ m.material.opacity = i===0?0.95:0.8; });
+      }
+    }
+
+    function loop(){
+      requestAnimationFrame(loop);
+      if(!prefersReduced && !drag) rotY += autoV;
+      group.rotation.x += (rotX - group.rotation.x)*0.08;
+      group.rotation.y += (rotY - group.rotation.y)*0.08;
+      // gentle pulse on the core
+      var t = Date.now()*0.001;
+      meshes[0].material.size = 0.15 + Math.sin(t*2)*0.02;
+      detectHover();
+      renderer.render(scene, camera);
+    }
+    loop();
+  })();
+
+  /* ===== 2. Loss Curve vs. Sanity (Chart.js) ===== */
+  (function lossEngine(){
+    var cv = document.getElementById('lossChart');
+    if(!cv || typeof Chart === 'undefined') return;
+
+    var N = 40, labels = [], train = [], val = [], body = [], brain = [];
+    for(var i=0; i<N; i++){
+      var x = i/(N-1);
+      labels.push(i);
+      // smooth exponential decay
+      train.push(+(0.08 + 2.4*Math.exp(-4.2*x)).toFixed(3));
+      // spiky, realistic validation recovery
+      var spike = Math.sin(x*22)*0.13*Math.exp(-1.5*x) + (Math.random()-0.5)*0.09;
+      val.push(+(0.28 + 2.3*Math.exp(-3.6*x) + spike).toFixed(3));
+      // body slowly giving up (down), brain excitement (up, exponential)
+      body.push(+(2.6 - 2.2*x + Math.sin(x*8)*0.05).toFixed(3));
+      brain.push(+(0.15*Math.exp(2.7*x)).toFixed(3));
+    }
+
+    var css = getComputedStyle(document.documentElement);
+    var ink = (css.getPropertyValue('--ink-soft')||'#5a4c3d').trim();
+    var faint = (css.getPropertyValue('--ink-faint')||'#8a785f').trim();
+    function ds(label, data, color, opts){
+      return Object.assign({
+        label:label, data:data, borderColor:color, backgroundColor:color,
+        borderWidth:2, tension:0.4, pointRadius:0, pointHoverRadius:4, fill:false
+      }, opts||{});
+    }
+
+    new Chart(cv.getContext('2d'), {
+      type:'line',
+      data:{ labels:labels, datasets:[
+        ds('Train loss', train, '#40e0d0'),
+        ds('Validation loss', val, '#0e1c4f', {borderWidth:1.6, tension:0.25}),
+        ds('Body — slowly giving up', body, '#68c4af', {borderDash:[5,4], tension:0.3}),
+        ds('Brain — excitement', brain, '#db4646', {borderWidth:2.4})
+      ]},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        animation: prefersReduced ? false : {duration:1100, easing:'easeOutQuart'},
+        interaction:{mode:'index', intersect:false},
+        scales:{
+          x:{ title:{display:true, text:'epoch  ·  hours awake', color:faint, font:{family:'IBM Plex Mono, monospace', size:11}},
+              grid:{color:'rgba(90,76,61,0.08)'}, ticks:{color:faint, maxTicksLimit:8, font:{family:'IBM Plex Mono, monospace', size:10}} },
+          y:{ title:{display:true, text:'loss  /  arbitrary sanity units', color:faint, font:{family:'IBM Plex Mono, monospace', size:11}},
+              grid:{color:'rgba(90,76,61,0.08)'}, ticks:{color:faint, font:{family:'IBM Plex Mono, monospace', size:10}} }
+        },
+        plugins:{
+          legend:{ labels:{color:ink, boxWidth:14, boxHeight:2, font:{family:'IBM Plex Mono, monospace', size:11.5}, usePointStyle:false} },
+          tooltip:{ backgroundColor:'rgba(46,38,32,0.94)', titleFont:{family:'IBM Plex Mono, monospace'}, bodyFont:{family:'IBM Plex Mono, monospace'}, padding:10 }
+        }
+      }
+    });
+  })();
+
+  /* ===== 3. Swarm Coordination Canvas (2D) ===== */
+  (function swarmEngine(){
+    var cv = document.getElementById('swarm-canvas');
+    if(!cv) return;
+    var ctx = cv.getContext('2d');
+    var wrap = cv.parentElement;
+    var W = 0, H = 0, dpr = Math.min(window.devicePixelRatio||1, 2);
+    var orch, subs = [], packets = [];
+
+    function layout(){
+      W = wrap.clientWidth; H = wrap.clientHeight;
+      if(!W || !H) return;
+      cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+      orch = {x:W/2, y:H*0.14, r:22};
+      var n = W < 520 ? 3 : 4;
+      subs = [];
+      for(var i=0; i<n; i++){
+        subs.push({ x: W*(i+1)/(n+1), y: H*0.68, r:14,
+                    label:['scraper','RAG','planner','critic'][i] || ('sub '+(i+1)) });
+      }
+    }
+    layout();
+    window.addEventListener('resize', layout);
+    if(typeof ResizeObserver !== 'undefined') new ResizeObserver(layout).observe(wrap);
+    window.__swarmLayout = layout;
+    var TASK = '#40e0d0', RESULT = '#ff6961';
+    function spawn(){
+      var target = subs[Math.floor(Math.random()*subs.length)];
+      packets.push({ from:orch, to:target, t:0, kind:'task', speed:0.006 + Math.random()*0.004 });
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+
+      // links
+      ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(223,231,245,0.18)';
+      subs.forEach(function(s){
+        ctx.beginPath(); ctx.moveTo(orch.x, orch.y); ctx.lineTo(s.x, s.y); ctx.stroke();
+      });
+
+      // packets
+      for(var i=packets.length-1; i>=0; i--){
+        var p = packets[i];
+        p.t += prefersReduced ? 0.02 : p.speed;
+        var a = p.kind==='task' ? p.from : p.to;
+        var b = p.kind==='task' ? p.to : p.from;
+        var x = a.x + (b.x-a.x)*p.t, y = a.y + (b.y-a.y)*p.t;
+        var col = p.kind==='task' ? TASK : RESULT;
+        ctx.beginPath(); ctx.arc(x, y, 3.4, 0, 7); ctx.fillStyle = col; ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, 7, 0, 7);
+        ctx.fillStyle = (p.kind==='task'?'rgba(64,224,208,':'rgba(255,105,97,')+'0.18)'; ctx.fill();
+        if(p.t >= 1){
+          if(p.kind==='task'){ p.kind='result'; p.t=0; p.speed=0.005+Math.random()*0.003; }
+          else { packets.splice(i,1); }
+        }
+      }
+
+      // subagents
+      subs.forEach(function(s){
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7);
+        ctx.fillStyle = 'rgba(64,224,208,0.14)'; ctx.fill();
+        ctx.lineWidth = 1.5; ctx.strokeStyle = '#68c4af'; ctx.stroke();
+        ctx.fillStyle = '#dfe7f5'; ctx.font = '10px IBM Plex Mono, monospace'; ctx.textAlign='center';
+        ctx.fillText(s.label, s.x, s.y + s.r + 14);
+      });
+
+      // orchestrator
+      ctx.beginPath(); ctx.arc(orch.x, orch.y, orch.r, 0, 7);
+      ctx.fillStyle = 'rgba(255,105,97,0.16)'; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = '#ff6961'; ctx.stroke();
+      ctx.fillStyle = '#ffe'; ctx.font = 'bold 10px IBM Plex Mono, monospace'; ctx.textAlign='center';
+      ctx.fillText('orchestrator', orch.x, orch.y - orch.r - 8);
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+    spawn();
+    setInterval(function(){ if(packets.length < 14) spawn(); }, prefersReduced ? 1400 : 620);
+  })();
+
+  /* ===== 4. Robot 3D (Three.js) ===== */
+  (function robotEngine(){
+    var canvas = document.getElementById('robot-canvas');
+    if(!canvas || typeof THREE === 'undefined') return;
+    var wrap = canvas.parentElement;
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    camera.position.set(0, 0.5, 6);
+    var renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+    scene.add(new THREE.AmbientLight(0x404050, 0.7));
+    var dirL = new THREE.DirectionalLight(0xffeedd, 0.9);
+    dirL.position.set(3, 4, 5); scene.add(dirL);
+    var ptL = new THREE.PointLight(0xff6961, 0.8, 12);
+    ptL.position.set(0, 2, 4); scene.add(ptL);
+    var bot = new THREE.Group(); scene.add(bot);
+    var bMat = new THREE.MeshPhongMaterial({color:0x4a5568, shininess:80, specular:0x666666});
+    var aMat = new THREE.MeshPhongMaterial({color:0x68c4af, shininess:100, specular:0x888888});
+    var dMat = new THREE.MeshPhongMaterial({color:0x2d3748, shininess:60});
+    var eMat = new THREE.MeshPhongMaterial({color:0xff6961, emissive:0xff6961, emissiveIntensity:0.7});
+    var pMat = new THREE.MeshPhongMaterial({color:0x0090ab, shininess:120, specular:0xaaaaaa});
+    // Torso
+    bot.add(new THREE.Mesh(new THREE.BoxGeometry(1.4,1.8,0.9), bMat));
+    var chst = new THREE.Mesh(new THREE.BoxGeometry(1.0,0.8,0.1), pMat);
+    chst.position.set(0,0.2,0.5); bot.add(chst);
+    var cL = new THREE.Mesh(new THREE.CircleGeometry(0.12,16), eMat);
+    cL.position.set(0,0.2,0.56); bot.add(cL);
+    // Head Group
+    var headGrp = new THREE.Group();
+    headGrp.position.set(0, 1.125, 0); bot.add(headGrp);
+    var hd = new THREE.Mesh(new THREE.BoxGeometry(0.9,0.85,0.75), bMat);
+    hd.position.y = 0.425; headGrp.add(hd);
+    var vis = new THREE.Mesh(new THREE.BoxGeometry(0.75,0.25,0.1), dMat);
+    vis.position.set(0,0.475,0.4); headGrp.add(vis);
+    var eGeo = new THREE.SphereGeometry(0.07,16,16);
+    var lEye = new THREE.Mesh(eGeo, eMat); lEye.position.set(-0.2,0.475,0.42); headGrp.add(lEye);
+    var rEye = new THREE.Mesh(eGeo, eMat); rEye.position.set(0.2,0.475,0.42); headGrp.add(rEye);
+    // Antenna
+    var antB = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.4,8), aMat);
+    antB.position.set(0,1.075,0); headGrp.add(antB);
+    var tMat = new THREE.MeshPhongMaterial({color:0x40e0d0, emissive:0x40e0d0, emissiveIntensity:0.5});
+    var aT = new THREE.Mesh(new THREE.SphereGeometry(0.08,16,16), tMat);
+    aT.position.set(0,1.325,0); headGrp.add(aT);
+    // Shoulders & Arms Group
+    var shG = new THREE.SphereGeometry(0.25,16,16);
+    var aG = new THREE.BoxGeometry(0.28,1.1,0.28);
+    var hGeo = new THREE.SphereGeometry(0.15,16,16);
+    var lArmGrp = new THREE.Group(); lArmGrp.position.set(-0.95,0.65,0); bot.add(lArmGrp);
+    var lSh = new THREE.Mesh(shG, aMat); lArmGrp.add(lSh);
+    var lArm = new THREE.Mesh(aG, bMat); lArm.position.set(0,-0.75,0); lArmGrp.add(lArm);
+    var lHnd = new THREE.Mesh(hGeo, aMat); lHnd.position.set(0,-1.4,0); lArmGrp.add(lHnd);
+    var rArmGrp = new THREE.Group(); rArmGrp.position.set(0.95,0.65,0); bot.add(rArmGrp);
+    var rSh = new THREE.Mesh(shG, aMat); rArmGrp.add(rSh);
+    var rArm = new THREE.Mesh(aG, bMat); rArm.position.set(0,-0.75,0); rArmGrp.add(rArm);
+    var rHnd = new THREE.Mesh(hGeo, aMat); rHnd.position.set(0,-1.4,0); rArmGrp.add(rHnd);
+    // Waist
+    var wst = new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.45,0.3,8), dMat);
+    wst.position.y = -1.05; bot.add(wst);
+    // Legs
+    var lgG = new THREE.BoxGeometry(0.32,1.1,0.32);
+    var lLeg = new THREE.Mesh(lgG, bMat); lLeg.position.set(-0.35,-1.8,0); bot.add(lLeg);
+    var rLeg = new THREE.Mesh(lgG, bMat); rLeg.position.set(0.35,-1.8,0); bot.add(rLeg);
+    var ftG = new THREE.BoxGeometry(0.38,0.15,0.5);
+    var lFt = new THREE.Mesh(ftG, aMat); lFt.position.set(-0.35,-2.4,0.08); bot.add(lFt);
+    var rFt = new THREE.Mesh(ftG, aMat); rFt.position.set(0.35,-2.4,0.08); bot.add(rFt);
+    function rResize(){
+      var w = wrap.clientWidth, h = wrap.clientHeight;
+      if(!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w/h; camera.updateProjectionMatrix();
+    }
+    rResize(); window.addEventListener('resize', rResize);
+    if(typeof ResizeObserver !== 'undefined') new ResizeObserver(rResize).observe(wrap);
+    var rDrag = false, rPx = 0, rRotY = 0;
+    canvas.addEventListener('mousedown', function(e){ rDrag=true; rPx=e.clientX; });
+    canvas.addEventListener('mousemove', function(e){ if(!rDrag) return; rRotY+=(e.clientX-rPx)*0.008; rPx=e.clientX; });
+    window.addEventListener('mouseup', function(){ rDrag=false; });
+    canvas.addEventListener('touchstart', function(e){ rDrag=true; rPx=e.touches[0].clientX; },{passive:true});
+    canvas.addEventListener('touchmove', function(e){ if(!rDrag) return; rRotY+=(e.touches[0].clientX-rPx)*0.008; rPx=e.touches[0].clientX; e.preventDefault(); },{passive:false});
+    window.addEventListener('touchend', function(){ rDrag=false; });
+    function rLoop(){
+      requestAnimationFrame(rLoop);
+      if(!prefersReduced && !rDrag) rRotY += 0.005;
+      bot.rotation.y += (rRotY - bot.rotation.y)*0.06;
+      var t = Date.now()*0.001;
+      bot.position.y = Math.sin(t*0.8)*0.12;
+      eMat.emissiveIntensity = 0.5 + Math.sin(t*3)*0.3;
+      tMat.emissiveIntensity = 0.3 + Math.sin(t*2.5)*0.3;
+      
+      // Tricks animation
+      lArmGrp.rotation.set(0,0,0); rArmGrp.rotation.set(0,0,0); headGrp.rotation.set(0,0,0);
+      var cycle = (t * 0.6) % 8; 
+      if (cycle > 1 && cycle < 3) {
+         var easeIn = Math.min(1, (cycle-1)*4);
+         var easeOut = Math.min(1, (3-cycle)*4);
+         var ease = Math.min(easeIn, easeOut);
+         rArmGrp.rotation.z = ease * (Math.PI - 0.4 + Math.sin(cycle*Math.PI*6)*0.4);
+         rArmGrp.rotation.x = ease * 0.2;
+      } else if (cycle > 5 && cycle < 7) {
+         var easeIn = Math.min(1, (cycle-5)*4);
+         var easeOut = Math.min(1, (7-cycle)*4);
+         var ease = Math.min(easeIn, easeOut);
+         lArmGrp.rotation.z = ease * (-Math.PI/2 - 0.4);
+         lArmGrp.rotation.y = ease * -0.5;
+         rArmGrp.rotation.z = ease * (Math.PI/2 + 0.2);
+         rArmGrp.rotation.x = ease * -1.5;
+         headGrp.rotation.z = ease * -0.5;
+         headGrp.rotation.x = ease * 0.3;
+      }
+      
+      renderer.render(scene, camera);
+    }
+    rLoop();
+  })();
+
+})();
+</script>
+</body>
+</html>
